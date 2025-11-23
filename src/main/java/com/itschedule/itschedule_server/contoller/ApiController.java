@@ -35,8 +35,6 @@ public class ApiController {
     //Login
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public ResponseEntity<String> getUserInfoForLogin(@RequestBody String data){
-        //Password는 리액트에 sha256 진행해서 넘어옴
-
         logger.info("test");
 
         JSONObject response = new JSONObject();
@@ -49,11 +47,13 @@ public class ApiController {
         logger.info("parameter: {}", data.toString());
 
         Map<String, String> parameter = new HashMap<>();
+        String passwordPlain = "";
 
         if(requestData.has("email") && requestData.has("password")){
 
             parameter.put("email", requestData.getString("email"));
-            parameter.put("password", requestData.getString("password"));
+//            parameter.put("password", requestData.getString("password"));
+            passwordPlain = requestData.getString("password");
 
         }else{
             response.put("code","999");
@@ -67,7 +67,13 @@ public class ApiController {
         String userInfoString = "";
 
         if(userInfo != null) {
-            userInfoString = ConvertUtils.userVoToJson(userInfo);
+            if(ConvertUtils.checkPassword(passwordPlain, userInfo.getPassword())) {
+                userInfoString = ConvertUtils.userVoToJson(userInfo);
+            }else{
+                response.put("code","202");
+                response.put("message","Invalid password");
+                response.put("msg","로그인 실패 비밀번호 틀림");
+            }
         }else{
             response.put("code","201");
             response.put("message","Invalid Information");
@@ -85,7 +91,6 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/signup")
     public ResponseEntity<String> signup(@RequestBody String data){
 
-        //Password는 리액트에 sha256 진행해서 넘어옴
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -100,9 +105,11 @@ public class ApiController {
             && requestData.has("email")
             && requestData.has("password")){
 
+            String hashPassword = ConvertUtils.hashPassword(requestData.getString("password"));
+
             parameter.put("name", requestData.getString("name"));
             parameter.put("email", requestData.getString("email"));
-            parameter.put("password", requestData.getString("password"));
+            parameter.put("password", hashPassword);
 
         }else{
             response.put("code","999");

@@ -8,14 +8,13 @@
             `id`,
             `name`,
             `email`,
+            `password`,
             `is_email_auth` AS isEmailAuth,
             `updated`,
             `created`
         FROM `tb_user`
         WHERE
             `email` = #{email}
-            AND
-            `password` = #{password}
     </select>
 
     <select id="getUserInfo" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
