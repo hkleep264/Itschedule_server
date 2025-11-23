@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itschedule.itschedule_server.repository.UserRepository">
+
+    <select id="getUserInfoForLogin" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            `id`,
+            `name`,
+            `email`,
+            `is_email_auth` AS isEmailAuth,
+            `updated`,
+            `created`
+        FROM `tb_user`
+        WHERE
+            `email` = #{email}
+            AND
+            `password` = #{password}
+    </select>
+
+    <select id="getUserInfo" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            `id`,
+            `name`,
+            `email`,
+            `is_email_auth` AS isEmailAuth,
+            `updated`,
+            `created`
+        FROM `tb_user`
+        WHERE
+            `email` = #{email}
+    </select>
+
+    <insert id="insertUser" parameterType="map">
+
+        INSERT INTO `tb_user`
+        VALUES(
+                  NULL,
+                  #{name},
+                  #{email},
+                  #{password},
+                  DEFAULT,
+                  now(),
+                  now()
+              )
+    </insert>
+
+
+</mapper>
