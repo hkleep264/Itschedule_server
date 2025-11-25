@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/schedule")
-@CrossOrigin(origins = "*")
 public class ApiController {
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
@@ -103,15 +102,18 @@ public class ApiController {
         //세션 만료 처리
         HttpSession session = request.getSession();
         session.invalidate();
+        log.info("session invalid");
     }
 
     //react -> spring session 체크
     @RequestMapping(method = RequestMethod.GET, value = "/me")
     public ResponseEntity<?> me(HttpServletRequest request) {
+        log.info("me check");
         HttpSession session = request.getSession(false);
         if (session == null) {
             return ResponseEntity.status(401).body(Map.of("authenticated", false));
         }
+
 
         String email = (String) session.getAttribute("email");
         Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
