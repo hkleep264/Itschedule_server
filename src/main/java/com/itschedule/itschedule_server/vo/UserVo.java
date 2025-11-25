@@ -10,6 +10,7 @@ public class UserVo {
     private String password;
     private String password2;
     private String isEmailAuth;
+    private int isAdmin;
     private String updated;
     private String created;
 }

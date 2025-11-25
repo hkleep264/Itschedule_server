@@ -3,6 +3,8 @@ package com.itschedule.itschedule_server.contoller;
 import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
 import com.itschedule.itschedule_server.vo.UserVo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,7 +36,8 @@ public class ApiController {
 
     //Login
     @RequestMapping(method = RequestMethod.POST, value = "/login")
-    public ResponseEntity<String> getUserInfoForLogin(@RequestBody String data){
+    public ResponseEntity<String> getUserInfoForLogin(@RequestBody String data,
+                                                      HttpServletRequest request){
         logger.info("test");
 
         JSONObject response = new JSONObject();
@@ -69,6 +72,12 @@ public class ApiController {
         if(userInfo != null) {
             if(ConvertUtils.checkPassword(passwordPlain, userInfo.getPassword())) {
                 userInfoString = ConvertUtils.userVoToJson(userInfo);
+                //로그인 성공
+                //세션 처리
+                HttpSession session = request.getSession();
+                session.setAttribute("email", userInfo.getEmail());
+                boolean isAdmin = userInfo.getIsAdmin() > 0;
+                session.setAttribute("isAdmin", isAdmin);
             }else{
                 response.put("code","202");
                 response.put("message","Invalid password");
@@ -85,6 +94,33 @@ public class ApiController {
         logger.info("response: {}", response);
 
         return ResponseEntity.ok(response.toString());
+    }
+
+    //Logout
+    @RequestMapping(method = RequestMethod.POST, value = "/logout")
+    public void logout(HttpServletRequest request){
+
+        //세션 만료 처리
+        HttpSession session = request.getSession();
+        session.invalidate();
+    }
+
+    //react -> spring session 체크
+    @RequestMapping(method = RequestMethod.GET, value = "/me")
+    public ResponseEntity<?> me(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(401).body(Map.of("authenticated", false));
+        }
+
+        String email = (String) session.getAttribute("email");
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+
+        return ResponseEntity.ok(Map.of(
+                "authenticated", true,
+                "email", email,
+                "isAdmin", isAdmin != null && isAdmin
+        ));
     }
 
     //signup
