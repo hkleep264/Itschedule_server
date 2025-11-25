@@ -33,12 +33,22 @@
 
     <insert id="insertUser" parameterType="map">
 
-        INSERT INTO `tb_user`
+        INSERT INTO `tb_user`(
+            `id`,
+            `name`,
+            `email`,
+            `password`,
+            `is_email_auth`,
+            `is_admin`,
+            `updated`,
+            `created`
+        )
         VALUES(
                   NULL,
                   #{name},
                   #{email},
                   #{password},
+                  DEFAULT,
                   DEFAULT,
                   now(),
                   now()
