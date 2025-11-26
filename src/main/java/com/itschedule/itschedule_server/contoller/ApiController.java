@@ -1,5 +1,6 @@
 package com.itschedule.itschedule_server.contoller;
 
+import com.itschedule.itschedule_server.service.BoardService;
 import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
 import com.itschedule.itschedule_server.vo.UserVo;
@@ -173,4 +174,5 @@ public class ApiController {
         return ResponseEntity.ok(response.toString());
 
     }
+
 }

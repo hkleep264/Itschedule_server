@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itschedule.itschedule_server.repository.BoardRepository">
+
+    <select id="getBoardList" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
+
+        SELECT
+            `id`,
+            `name`,
+--             `content`,
+            `start_dt` AS startDate,
+            `end_dt` AS endDate,
+            `updated`,
+            `created`
+        FROM `tb_project`
+        WHERE
+            1 = 1
+        ORDER BY `id` DESC
+    </select>
+
+    <select id="getBoardInfo" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
+
+        SELECT
+            `id`,
+            `name`,
+            `content`,
+            `start_dt` AS startDate,
+            `end_dt` AS endDate,
+            `updated`,
+            `created`
+        FROM `tb_project`
+        WHERE
+            `id` = #{boardId}
+    </select>
+
+    <insert id="insertBoardInfo" parameterType="map">
+
+        INSERT INTO `tb_project`(
+            `id`,
+            `name`,
+            `content`,
+            `start_dt`,
+            `end_dt`,
+            `updated`,
+            `created`
+        )
+        VALUES(
+                  NULL,
+                  #{name},
+                  #{content},
+                  #{startDate},
+                  #{endDate},
+                  NOW(),
+                  NOW()
+              )
+    </insert>
+
+    <update id="updateBoardInfo" parameterType="map">
+
+        UPDATE `tb_project`
+        SET
+            `name` = #{name},
+            `content` = #{content},
+            `start_dt` = #{startDate},
+            `end_dt` = #{endDate},
+            `updated` = NOW()
+        WHERE `id` = #{boardId}
+
+    </update>
+
+
+</mapper>

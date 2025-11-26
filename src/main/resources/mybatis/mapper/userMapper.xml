@@ -52,8 +52,8 @@
                   #{password},
                   DEFAULT,
                   DEFAULT,
-                  now(),
-                  now()
+                  NOW(),
+                  NOW()
               )
     </insert>
 
