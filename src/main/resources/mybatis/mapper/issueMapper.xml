@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itschedule.itschedule_server.repository.IssueRepository">
+
+    <select id="getIssueList" resultType="com.itschedule.itschedule_server.vo.IssueVo" parameterType="map">
+
+        SELECT
+            i.`id` AS issueId,
+            i.`project_id` AS projectId,
+            i.`name`,
+            i.`content`,
+            i.`issue_type` AS issueType,
+            i.`issue_priority` AS issuePriority,
+            i.`issue_status` AS issueStatus,
+            i.`manager_user_id` AS managerUserId,
+            i.`write_user_id` AS writeUserId,
+            i.`start_dt` AS startDate,
+            i.`end_dt` AS endDate,
+            i.`updated`,
+            i.`created`,
+            b.`name` AS projectName,
+            manager.`name` AS managerName,
+            writer.`name` AS writerName
+        FROM tb_issue i
+            JOIN tb_project b ON i.project_id = b.id
+            JOIN tb_user manager ON i.manager_user_id = manager.id
+            JOIN tb_user writer ON b.user_id = writer.id
+        <if test="isAdmin == 0 ">
+            JOIN tb_project_member member
+                ON
+                (member.project_id = i.project_id
+                AND member.user_id = #{userId}
+                )
+        </if>
+        <if test="projectName != null and projectName != ''">
+            AND b.`name` LIKE CONCAT('%', #{projectName}, '%')
+        </if>
+        ORDER BY i.`id` DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="issueListTotalCount" resultType="int" parameterType="map">
+
+        SELECT
+            count(*)
+        FROM `tb_issue` i
+            JOIN tb_project b
+            ON i.project_id = b.id
+        <if test="isAdmin == 0 ">
+            JOIN tb_project_member member
+            ON
+            (member.project_id = i.project_id
+            AND member.user_id = #{userId}
+            )
+        </if>
+        WHERE
+            1=1
+        <if test="projectName != null and projectName != ''">
+            AND b.`name` LIKE CONCAT('%', #{projectName}, '%')
+        </if>
+
+    </select>
+
+    <select id="getIssueInfo" resultType="com.itschedule.itschedule_server.vo.IssueVo" parameterType="map">
+
+        SELECT
+            i.`id` AS issueId,
+            i.`project_id` AS projectId,
+            i.`name`,
+            i.`content`,
+            i.`issue_type` AS issueType,
+            i.`issue_priority` AS issuePriority,
+            i.`issue_status` AS issueStatus,
+            i.`manager_user_id` AS managerUserId,
+            i.`write_user_id` AS writeUserId,
+            i.`start_dt` AS startDate,
+            i.`end_dt` AS endDate,
+            i.`updated`,
+            i.`created`,
+            b.`name` AS projectName,
+            manager.`name` AS managerName,
+            writer.`name` AS writerName
+        FROM tb_issue i,
+             tb_project b,
+             tb_user manager,
+             tb_user writer
+        WHERE i.project_id = b.id
+          AND i.manager_user_id = manager.id
+          AND b.user_id = writer.id
+          AND i.`id` = #{issueId}
+    </select>
+
+    <select id="getProjectList" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
+        SELECT
+            p.`id` AS projectId,
+            p.`name` AS projectName,
+            p.`content`,
+            p.`user_id` AS userId,
+            p.`start_dt` AS startDate,
+            p.`end_dt` AS endDate,
+            p.`updated`,
+            p.`created`
+        FROM tb_project p
+        <if test="isAdmin == 0 ">
+             JOIN tb_project_member m
+              ON(
+                  p.id = m.project_id
+                      AND m.user_id = #{userId}
+                  )
+        </if>
+    </select>
+
+    <select id="getProjectListWithMember" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
+        SELECT
+            p.id AS projectId,
+            p.name AS projectName,
+            u.id AS userId,
+            u.name AS userName,
+            u.email
+        FROM tb_project p
+                 LEFT JOIN tb_project_member pm ON pm.project_id = p.id
+                 LEFT JOIN tb_user u ON u.id = pm.user_id
+        <if test="isAdmin == 0 ">
+        WHERE p.id IN (
+            SELECT pm2.project_id
+            FROM tb_project_member pm2
+            WHERE pm2.user_id = #{userId}
+        )
+        </if>
+
+        ORDER BY p.id;
+    </select>
+
+    <insert id="insertIssueInfo" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+
+        INSERT INTO `tb_project`(
+            `id`,
+            `name`,
+            `content`,
+            `user_id`,
+            `start_dt`,
+            `end_dt`,
+            `updated`,
+            `created`
+        )
+        VALUES(
+                  NULL,
+                  #{name},
+                  #{content},
+                  #{userId},
+                  #{startDate},
+                  #{endDate},
+                  NOW(),
+                  NOW()
+              )
+    </insert>
+
+    <update id="updateIssueInfo" parameterType="map">
+
+        UPDATE `tb_project`
+        SET
+            `name` = #{name},
+            `content` = #{content},
+            `start_dt` = #{startDate},
+            `end_dt` = #{endDate},
+            `updated` = NOW()
+        WHERE `id` = #{issueId}
+
+    </update>
+
+    <select id="getUserListAll" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            `id` AS userId,
+            `name` AS userName,
+            `email`,
+            `is_email_auth` AS isEmailAuth,
+            `is_admin` AS isAdmin,
+            `updated`,
+            `created`
+        FROM `tb_user`
+    </select>
+
+    <select id="getUserListForProject" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            p.`project_id` AS projectId,
+            p.`user_id` AS userId,
+            u.name AS userName,
+            u.email
+        FROM tb_project_member p,
+             tb_user u
+        WHERE p.user_id = u.id
+          AND p.project_id = #{projectId}
+    </select>
+
+    <delete id="clearIssueMember" parameterType="Integer">
+
+        DELETE FROM `tb_project_member`
+            WHERE `project_id` = #{projectId}
+    </delete>
+
+    <insert id="insertIssueMember" parameterType="map">
+
+        INSERT INTO tb_project_member (
+            project_id,
+            user_id,
+            updated,
+            created
+            )
+        VALUES
+        <foreach collection="memberList"
+                 item="member"
+                 separator=",">
+            (#{projectId}, #{member.userId}, NOW(), NOW())
+        </foreach>
+    </insert>
+
+
+</mapper>

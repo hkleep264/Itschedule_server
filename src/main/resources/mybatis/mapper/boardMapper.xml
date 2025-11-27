@@ -20,6 +20,7 @@
             <if test="name != null and name != ''">
                 AND p.`name` LIKE CONCAT('%', #{name}, '%')
             </if>
+
         ORDER BY p.`id` DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
@@ -34,7 +35,6 @@
         <if test="name != null and name != ''">
             AND `name` LIKE CONCAT('%', #{name}, '%')
         </if>
-        ORDER BY `id` DESC
     </select>
 
     <select id="getBoardInfo" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">

@@ -1,0 +1,87 @@
+package com.itschedule.itschedule_server.service;
+
+import com.itschedule.itschedule_server.repository.IssueRepository;
+import com.itschedule.itschedule_server.vo.BoardVo;
+import com.itschedule.itschedule_server.vo.IssueVo;
+import com.itschedule.itschedule_server.vo.UserVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+@Transactional
+@Service
+public class IssueService {
+
+    private static final Logger logger = LoggerFactory.getLogger(IssueService.class);
+
+    private final IssueRepository issueRepository;
+
+    public IssueService(IssueRepository issueRepository) {
+        this.issueRepository = issueRepository;
+    }
+
+    //이슈 리스트 가져오기
+    public List<IssueVo> getIssueList(Map<String, Object> parameter){
+        return issueRepository.getIssueList(parameter);
+    }
+
+    //이슈 전체 리스트 갯수 져오기
+    public int issueListTotalCount(Map<String, Object> parameter){
+        Integer cnt = issueRepository.issueListTotalCount(parameter);
+        return cnt == null ? 0 : cnt;
+    }
+
+    //이슈 정보 가져오기
+    public IssueVo getIssueInfo(Map<String, String> parameter){
+        return issueRepository.getIssueInfo(parameter);
+    }
+
+    //프로젝트 리스트 가져오기
+    public List<BoardVo> getProjectList(Map<String, Object> parameter){
+        return issueRepository.getProjectList(parameter);
+    }
+
+    //프로젝트 리스트 가져오기
+    public List<BoardVo> getProjectListWithMember(Map<String, Object> parameter){
+        return issueRepository.getProjectListWithMember(parameter);
+    }
+
+    //이슈 정보 추가
+    public void insertIssueInfo(Map<String, Object> parameter){
+        issueRepository.insertIssueInfo(parameter);
+    }
+
+    //이슈 정보 수정
+    public void updateIssueInfo(Map<String, String> parameter){
+        issueRepository.updateIssueInfo(parameter);
+    }
+
+    //전체 유저 가져오기
+    public List<UserVo> getUserListAll(Map<String, String> parameter){
+        return issueRepository.getUserListAll(parameter);
+    }
+
+    //이슈 멤버 가져오기
+    public List<UserVo> getUserListForProject(Map<String, String> parameter){
+        return issueRepository.getUserListForProject(parameter);
+    }
+
+    //이슈 멤버 교체
+    public void updateProjectMemberList(int issueId, List<UserVo> memberList){
+//        위에 @Transactional 걸려 있어서 실패시 자동 Rollback 처리
+
+        //전체 멤버 클리어
+        issueRepository.clearIssueMember(issueId);
+        // 2) 새 멤버 없는 경우 종료
+        if (memberList == null || memberList.isEmpty()) {
+            return;
+        }
+
+        issueRepository.insertIssueMember(issueId, memberList);
+    }
+
+}
