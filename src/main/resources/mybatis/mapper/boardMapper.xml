@@ -93,5 +93,53 @@
 
     </update>
 
+    <select id="getUserListAll" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            `id` AS userId,
+            `name` AS userName,
+            `email`,
+            `is_email_auth` AS isEmailAuth,
+            `is_admin` AS isAdmin,
+            `updated`,
+            `created`
+        FROM `tb_user`
+    </select>
+
+    <select id="getUserListForProject" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            p.`project_id` AS projectId,
+            p.`user_id` AS userId,
+            u.name AS userName,
+            u.email
+        FROM tb_project_member p,
+             tb_user u
+        WHERE p.user_id = u.id
+          AND p.project_id = #{boardId}
+    </select>
+
+    <delete id="clearBoardMember" parameterType="Integer">
+
+        DELETE FROM `tb_project_member`
+            WHERE `project_id` = #{boardId}
+    </delete>
+
+    <insert id="insertBoardMember" parameterType="map">
+
+        INSERT INTO tb_project_member (
+            project_id,
+            user_id,
+            updated,
+            created
+            )
+        VALUES
+        <foreach collection="memberList"
+                 item="member"
+                 separator=",">
+            (#{boardId}, #{member.userId}, NOW(), NOW())
+        </foreach>
+    </insert>
+
 
 </mapper>

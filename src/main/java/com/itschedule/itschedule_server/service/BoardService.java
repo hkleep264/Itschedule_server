@@ -2,6 +2,8 @@ package com.itschedule.itschedule_server.service;
 
 import com.itschedule.itschedule_server.repository.BoardRepository;
 import com.itschedule.itschedule_server.vo.BoardVo;
+import com.itschedule.itschedule_server.vo.UserVo;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,30 @@ public class BoardService {
     //프로젝트 정보 수정
     public void updateBoardInfo(Map<String, String> parameter){
         boardRepository.updateBoardInfo(parameter);
+    }
+
+    //전체 유저 가져오기
+    public List<UserVo> getUserListAll(Map<String, String> parameter){
+        return boardRepository.getUserListAll(parameter);
+    }
+
+    //프로젝트 멤버 가져오기
+    public List<UserVo> getUserListForProject(Map<String, String> parameter){
+        return boardRepository.getUserListForProject(parameter);
+    }
+
+    //프로젝트 멤버 교체
+    public void updateProjectMemberList(int boardId, List<UserVo> memberList){
+//        위에 @Transactional 걸려 있어서 실패시 자동 Rollback 처리
+
+        //전체 멤버 클리어
+        boardRepository.clearBoardMember(boardId);
+        // 2) 새 멤버 없는 경우 종료
+        if (memberList == null || memberList.isEmpty()) {
+            return;
+        }
+
+        boardRepository.insertBoardMember(boardId, memberList);
     }
 
 }

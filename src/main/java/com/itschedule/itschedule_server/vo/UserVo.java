@@ -13,4 +13,8 @@ public class UserVo {
     private int isAdmin;
     private String updated;
     private String created;
+
+    private int projectId;
+    private int userId;
+    private String userName;
 }

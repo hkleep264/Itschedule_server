@@ -1,5 +1,9 @@
 package com.itschedule.itschedule_server.contoller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itschedule.itschedule_server.service.BoardService;
 import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
@@ -165,9 +169,15 @@ public class BoardController {
             return ResponseEntity.ok(response.toString());
         }
 
+        //프로젝트 정보 Response 추가
         BoardVo boardInfo = boardService.getBoardInfo(parameter);
         JSONObject boardInfoJson =  new JSONObject(boardInfo);
         response.put("boardInfo", boardInfoJson);
+
+        //유저 리스트 Response 추가
+        List<UserVo> userList = boardService.getUserListForProject(parameter);
+        JSONArray userListJson = new JSONArray(userList);
+        response.put("userList", userListJson);
 
 
         logger.info("response: {}", response);
@@ -187,14 +197,16 @@ public class BoardController {
         logger.info("parameter: {}", data.toString());
 
         Map<String, String> parameter = new HashMap<>();
-
+        String boardId = "";
         if(requestData.has("boardId")
                 && requestData.has("name")
                 && requestData.has("content")
                 && requestData.has("startDate")
                 && requestData.has("endDate")){
 
-            parameter.put("boardId", requestData.getString("boardId"));
+            boardId = requestData.getString("boardId");
+
+            parameter.put("boardId", boardId);
             parameter.put("name", requestData.getString("name"));
             parameter.put("content", requestData.getString("content"));
 
@@ -214,12 +226,57 @@ public class BoardController {
         }
         log.info("update parameter: {}", parameter);
 
+        //유저 정보 업데이트
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(requestData.toString());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode arrayNode = root.get("memberList");
+
+        List<UserVo> memberList = mapper.convertValue(
+                arrayNode,
+                new TypeReference<List<UserVo>>() {}
+        );
+
+        log.info("memberList: {}", memberList);
+
+        //게시물 정보 바꾸기
         boardService.updateBoardInfo(parameter);
+        //멤버 정보 바꾸기
+        boardService.updateProjectMemberList(Integer.parseInt(boardId), memberList);
 
         logger.info("response: {}", response);
 
         return ResponseEntity.ok(response.toString());
 
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/alluser")
+    public ResponseEntity<String> getAllUser(@RequestBody String data){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+
+        Map<String, String> parameter = new HashMap<>();
+
+        //전체 유저 리스트 Response 추가
+        List<UserVo> userList = boardService.getUserListAll(parameter);
+        JSONArray userListJson = new JSONArray(userList);
+        response.put("userAllList", userListJson);
+
+
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
     }
 
 }
