@@ -23,8 +23,14 @@ public class BoardService {
     }
 
     //프로젝트 리스트 가져오기
-    public List<BoardVo> getBoardList(Map<String, String> parameter){
+    public List<BoardVo> getBoardList(Map<String, Object> parameter){
         return boardRepository.getBoardList(parameter);
+    }
+
+    //프로젝트 전체 리스트 갯수 져오기
+    public int boardListTotalCount(Map<String, Object> parameter){
+        Integer cnt = boardRepository.boardListTotalCount(parameter);
+        return cnt == null ? 0 : cnt;
     }
 
     //프로젝트 정보 가져오기

@@ -5,32 +5,55 @@
     <select id="getBoardList" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
 
         SELECT
-            `id`,
-            `name`,
---             `content`,
-            `start_dt` AS startDate,
-            `end_dt` AS endDate,
-            `updated`,
-            `created`
+        p.`id`,
+        p.`name`,
+        p.`content`,
+        p.`user_id` AS userId,
+        p.`start_dt` AS startDate,
+        p.`end_dt` AS endDate,
+        p.`updated`,
+        p.`created`,
+        u.name AS writer
+        FROM `tb_project` p, tb_user u
+        WHERE
+            p.user_id = u.id
+            <if test="name != null and name != ''">
+                AND p.`name` LIKE CONCAT('%', #{name}, '%')
+            </if>
+        ORDER BY p.`id` DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="boardListTotalCount" resultType="int" parameterType="map">
+
+        SELECT
+            count(*)
         FROM `tb_project`
         WHERE
             1 = 1
+        <if test="name != null and name != ''">
+            AND `name` LIKE CONCAT('%', #{name}, '%')
+        </if>
         ORDER BY `id` DESC
     </select>
 
     <select id="getBoardInfo" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
 
         SELECT
-            `id`,
-            `name`,
-            `content`,
-            `start_dt` AS startDate,
-            `end_dt` AS endDate,
-            `updated`,
-            `created`
-        FROM `tb_project`
+            p.`id`,
+            p.`name`,
+            p.`content`,
+            p.`user_id` AS userId,
+            p.`start_dt` AS startDate,
+            p.`end_dt` AS endDate,
+            p.`updated`,
+            p.`created`,
+            u.name AS writer
+        FROM `tb_project` p, tb_user u
+
         WHERE
-            `id` = #{boardId}
+            p.user_id = u.id
+            AND p.`id` = #{boardId}
     </select>
 
     <insert id="insertBoardInfo" parameterType="map">
@@ -39,6 +62,7 @@
             `id`,
             `name`,
             `content`,
+            `user_id`,
             `start_dt`,
             `end_dt`,
             `updated`,
@@ -48,6 +72,7 @@
                   NULL,
                   #{name},
                   #{content},
+                  #{userId},
                   #{startDate},
                   #{endDate},
                   NOW(),

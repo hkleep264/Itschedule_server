@@ -5,6 +5,8 @@ import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
 import com.itschedule.itschedule_server.vo.BoardVo;
 import com.itschedule.itschedule_server.vo.UserVo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,7 +43,7 @@ public class BoardController {
 
     //프로젝트 추가
     @RequestMapping(method = RequestMethod.POST, value = "/insert")
-    public ResponseEntity<String> insertBoard(@RequestBody String data){
+    public ResponseEntity<String> insertBoard(@RequestBody String data, HttpServletRequest request){
 
         JSONObject response = new JSONObject();
         response.put("code","200");
@@ -53,6 +55,8 @@ public class BoardController {
 
         Map<String, String> parameter = new HashMap<>();
 
+        HttpSession session = request.getSession();
+
         if(requestData.has("name")
                 && requestData.has("content")
                 && requestData.has("startDate")
@@ -60,8 +64,11 @@ public class BoardController {
 
             parameter.put("name", requestData.getString("name"));
             parameter.put("content", requestData.getString("content"));
+
             parameter.put("startDate", requestData.getString("startDate"));
             parameter.put("endDate", requestData.getString("endDate"));
+            int userId = (int) session.getAttribute("userId");
+            parameter.put("userId", String.valueOf(userId));
 
         }else{
             response.put("code","999");
@@ -79,19 +86,53 @@ public class BoardController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public ResponseEntity<String> boardList(){
+    @RequestMapping(method = RequestMethod.POST, value = "/list")
+    public ResponseEntity<String> boardList(@RequestBody String data){
 
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
         response.put("msg","성공");
 
-        Map<String, String> parameter = new HashMap<>();
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+        logger.info("parameter requestData: {}", requestData.toString());
+
+        Map<String, Object> parameter = new HashMap<>();
+
+
+        int size = 10;
+        int page = 1;
+
+        if(requestData.has("page")){
+            page = requestData.getInt("page");
+        }
+
+        if(requestData.has("size")){
+            size = requestData.getInt("size");
+        }
+
+        if(requestData.has("name")){
+            parameter.put("name", requestData.getString("name"));
+        }
+
+        int pageSize = size <= 0 ? 10 : size;
+        int pageNo = page <= 0 ? 1 : page;
+        int offset = (pageNo - 1) * pageSize;
+
+        parameter.put("size", size);
+        parameter.put("offset", offset);
 
         List<BoardVo> boardList = boardService.getBoardList(parameter);
+        int totalCount = boardService.boardListTotalCount(parameter);
+
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         JSONArray boardListJson = new JSONArray(boardList);
-        response.put("boardList", boardListJson);
+        response.put("list", boardListJson);
+        response.put("page", pageNo);
+        response.put("size", pageSize);
+        response.put("totalCount", totalCount);
+        response.put("totalPages", totalPages);
 
 
         logger.info("response: {}", response);
@@ -147,15 +188,22 @@ public class BoardController {
 
         Map<String, String> parameter = new HashMap<>();
 
-        if(requestData.has("name")
+        if(requestData.has("boardId")
+                && requestData.has("name")
                 && requestData.has("content")
                 && requestData.has("startDate")
                 && requestData.has("endDate")){
 
+            parameter.put("boardId", requestData.getString("boardId"));
             parameter.put("name", requestData.getString("name"));
             parameter.put("content", requestData.getString("content"));
-            parameter.put("startDate", requestData.getString("startDate"));
-            parameter.put("endDate", requestData.getString("endDate"));
+
+            String startDate = requestData.getString("startDate");
+            String endDate = requestData.getString("endDate");
+            startDate += " 00:00:00";
+            endDate += " 23:59:59";
+            parameter.put("startDate", startDate);
+            parameter.put("endDate", endDate);
 
         }else{
             response.put("code","999");
@@ -164,6 +212,7 @@ public class BoardController {
 
             return ResponseEntity.ok(response.toString());
         }
+        log.info("update parameter: {}", parameter);
 
         boardService.updateBoardInfo(parameter);
 

@@ -10,7 +10,8 @@ import java.util.Map;
 @Repository
 @Mapper
 public interface BoardRepository {
-    List<BoardVo> getBoardList(Map<String, String> parameter);
+    List<BoardVo> getBoardList(Map<String, Object> parameter);
+    Integer boardListTotalCount(Map<String, Object> parameter);
     BoardVo getBoardInfo(Map<String, String> parameter);
     void insertBoardInfo(Map<String, String> parameter);
     void updateBoardInfo(Map<String, String> parameter);

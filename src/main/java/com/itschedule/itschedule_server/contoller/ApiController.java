@@ -78,6 +78,7 @@ public class ApiController {
                 session.setAttribute("email", userInfo.getEmail());
                 boolean isAdmin = userInfo.getIsAdmin() > 0;
                 session.setAttribute("isAdmin", isAdmin);
+                session.setAttribute("userId", userInfo.getId());
             }else{
                 response.put("code","202");
                 response.put("message","Invalid password");
