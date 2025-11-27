@@ -56,7 +56,7 @@
             AND p.`id` = #{boardId}
     </select>
 
-    <insert id="insertBoardInfo" parameterType="map">
+    <insert id="insertBoardInfo" parameterType="map" useGeneratedKeys="true" keyProperty="id">
 
         INSERT INTO `tb_project`(
             `id`,

@@ -41,7 +41,7 @@ public class BoardService {
     }
 
     //프로젝트 정보 추가
-    public void insertBoardInfo(Map<String, String> parameter){
+    public void insertBoardInfo(Map<String, Object> parameter){
         boardRepository.insertBoardInfo(parameter);
     }
 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class BoardController {
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
 
-        Map<String, String> parameter = new HashMap<>();
+        Map<String, Object> parameter = new HashMap<>();
 
         HttpSession session = request.getSession();
 
@@ -82,7 +83,37 @@ public class BoardController {
             return ResponseEntity.ok(response.toString());
         }
 
+        //유저 정보 업데이트
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(requestData.toString());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode arrayNode = root.get("memberList");
+
+        List<UserVo> memberList = mapper.convertValue(
+                arrayNode,
+                new TypeReference<List<UserVo>>() {}
+        );
+
+        log.info("memberList: {}", memberList);
+
+        //프로젝트 추가
         boardService.insertBoardInfo(parameter);
+
+        if(parameter.get("id") != null){
+            BigInteger boardIdTemp = (BigInteger) parameter.get("id");
+            int boardId = boardIdTemp.intValue();
+            log.info("boardId: {}", boardId);
+            //멤버 추가
+            //멤버 정보 바꾸기
+            boardService.updateProjectMemberList(boardId, memberList);
+        }
+
+
 
         logger.info("response: {}", response);
 
