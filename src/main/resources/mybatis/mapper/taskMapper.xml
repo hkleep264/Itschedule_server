@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itschedule.itschedule_server.repository.TaskRepository">
+
+    <select id="getTaskList" resultType="com.itschedule.itschedule_server.vo.TaskVo" parameterType="map">
+
+        SELECT
+        i.`id` AS issueId,
+        i.`project_id` AS projectId,
+        i.`name`,
+        i.`content`,
+        i.`issue_type` AS issueType,
+        i.`issue_priority` AS issuePriority,
+        i.`issue_status` AS issueStatus,
+        i.`manager_user_id` AS managerUserId,
+        i.`start_dt` AS startDate,
+        i.`end_dt` AS endDate,
+        i.`updated`,
+        i.`created`,
+        b.`name` AS projectName,
+        manager.`name` AS managerName
+        FROM tb_issue i
+        JOIN tb_project b ON i.project_id = b.id
+        JOIN tb_user manager ON i.manager_user_id = manager.id
+        WHERE i.manager_user_id = #{userId}
+        ORDER BY i.`id` DESC
+    </select>
+
+    <update id="taskQuickUpdate" parameterType="map">
+
+        UPDATE `tb_issue`
+        SET
+            `issue_status` = #{issueStatus},
+            `updated` = NOW()
+        WHERE `id` = #{issueId}
+
+    </update>
+
+    <update id="taskUpdate" parameterType="map">
+
+        UPDATE `tb_issue`
+        SET
+            `name` = #{name},
+            `content` = #{content},
+            `issue_priority` = #{issuePriority},
+            `issue_status` = #{issueStatus},
+            `start_dt` = #{startDate},
+            `end_dt` = #{endDate},
+            `updated` = NOW()
+        WHERE `id` = #{issueId}
+
+    </update>
+
+</mapper>

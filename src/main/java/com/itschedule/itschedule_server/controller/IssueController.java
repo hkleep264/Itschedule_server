@@ -315,8 +315,8 @@ public class IssueController {
             parameter.put("content", requestData.getString("content"));
             parameter.put("assigneeId", requestData.getInt("assigneeId"));
 
-            String startDate = requestData.getString("startDate");
-            String endDate = requestData.getString("endDate");
+            String startDate = requestData.getString("startDate").substring(0, 10);
+            String endDate = requestData.getString("endDate").substring(0, 10);
             startDate += " 00:00:00";
             endDate += " 23:59:59";
             parameter.put("startDate", startDate);
