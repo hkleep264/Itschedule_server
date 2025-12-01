@@ -1,4 +1,4 @@
-package com.itschedule.itschedule_server.contoller;
+package com.itschedule.itschedule_server.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,12 +1,10 @@
-package com.itschedule.itschedule_server.contoller;
+package com.itschedule.itschedule_server.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itschedule.itschedule_server.service.BoardService;
-import com.itschedule.itschedule_server.service.UserService;
-import com.itschedule.itschedule_server.utils.ConvertUtils;
 import com.itschedule.itschedule_server.vo.BoardVo;
 import com.itschedule.itschedule_server.vo.UserVo;
 import jakarta.servlet.http.HttpServletRequest;
