@@ -16,12 +16,9 @@ public interface IssueRepository {
     List<IssueVo> getIssueList(Map<String, Object> parameter);
     Integer issueListTotalCount(Map<String, Object> parameter);
     IssueVo getIssueInfo(Map<String, String> parameter);
-    List<BoardVo> getProjectList(Map<String, Object> parameter);
     List<BoardVo> getProjectListWithMember(Map<String, Object> parameter);
     void insertIssueInfo(Map<String, Object> parameter);
-    void updateIssueInfo(Map<String, String> parameter);
+    void updateIssueInfo(Map<String, Object> parameter);
     List<UserVo> getUserListAll(Map<String, String> parameter);
     List<UserVo> getUserListForProject(Map<String, String> parameter);
-    void clearIssueMember(@Param("issueId") int issueId);
-    void insertIssueMember(@Param("issueId") int issueId,  @Param("memberList") List<UserVo> memberList);
 }

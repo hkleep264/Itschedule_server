@@ -244,13 +244,20 @@ public class IssueController {
         HttpSession session = request.getSession();
 
         if(requestData.has("name")
+                && requestData.has("projectId")
+                && requestData.has("issueType")
+                && requestData.has("priority")
                 && requestData.has("content")
+                && requestData.has("assigneeId")
                 && requestData.has("startDate")
                 && requestData.has("endDate")){
 
             parameter.put("name", requestData.getString("name"));
+            parameter.put("projectId", requestData.getInt("projectId"));
+            parameter.put("issueType", requestData.getString("issueType"));
+            parameter.put("priority", requestData.getString("priority"));
             parameter.put("content", requestData.getString("content"));
-
+            parameter.put("assigneeId", requestData.getString("assigneeId"));
             parameter.put("startDate", requestData.getString("startDate"));
             parameter.put("endDate", requestData.getString("endDate"));
             int userId = (int) session.getAttribute("userId");
@@ -264,37 +271,8 @@ public class IssueController {
             return ResponseEntity.ok(response.toString());
         }
 
-        //유저 정보 업데이트
-        ObjectMapper mapper = new ObjectMapper();
-
-        JsonNode root = null;
-        try {
-            root = mapper.readTree(requestData.toString());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        JsonNode arrayNode = root.get("memberList");
-
-        List<UserVo> memberList = mapper.convertValue(
-                arrayNode,
-                new TypeReference<List<UserVo>>() {}
-        );
-
-        log.info("memberList: {}", memberList);
-
         //프로젝트 추가
         issueService.insertIssueInfo(parameter);
-
-        if(parameter.get("id") != null){
-            BigInteger issueIdTemp = (BigInteger) parameter.get("id");
-            int issueId = issueIdTemp.intValue();
-            log.info("issueId: {}", issueId);
-            //멤버 추가
-            //멤버 정보 바꾸기
-            issueService.updateProjectMemberList(issueId, memberList);
-        }
-
-
 
         logger.info("response: {}", response);
 
@@ -315,19 +293,27 @@ public class IssueController {
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
 
-        Map<String, String> parameter = new HashMap<>();
-        String issueId = "";
-        if(requestData.has("issueId")
-                && requestData.has("name")
-                && requestData.has("content")
-                && requestData.has("startDate")
-                && requestData.has("endDate")){
+        Map<String, Object> parameter = new HashMap<>();
 
-            issueId = requestData.getString("issueId");
+        if(requestData.has("issueId")
+            && requestData.has("name")
+            && requestData.has("issueType")
+            && requestData.has("issuePriority")
+            && requestData.has("issueStatus")
+            && requestData.has("content")
+            && requestData.has("assigneeId")
+            && requestData.has("startDate")
+            && requestData.has("endDate")){
+
+            int issueId = requestData.getInt("issueId");
 
             parameter.put("issueId", issueId);
             parameter.put("name", requestData.getString("name"));
+            parameter.put("issueType", requestData.getString("issueType"));
+            parameter.put("issuePriority", requestData.getInt("issuePriority"));
+            parameter.put("issueStatus", requestData.getInt("issueStatus"));
             parameter.put("content", requestData.getString("content"));
+            parameter.put("assigneeId", requestData.getInt("assigneeId"));
 
             String startDate = requestData.getString("startDate");
             String endDate = requestData.getString("endDate");
@@ -345,28 +331,8 @@ public class IssueController {
         }
         log.info("update parameter: {}", parameter);
 
-        //유저 정보 업데이트
-        ObjectMapper mapper = new ObjectMapper();
-
-        JsonNode root = null;
-        try {
-            root = mapper.readTree(requestData.toString());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        JsonNode arrayNode = root.get("memberList");
-
-        List<UserVo> memberList = mapper.convertValue(
-                arrayNode,
-                new TypeReference<List<UserVo>>() {}
-        );
-
-        log.info("memberList: {}", memberList);
-
         //게시물 정보 바꾸기
         issueService.updateIssueInfo(parameter);
-        //멤버 정보 바꾸기
-        issueService.updateProjectMemberList(Integer.parseInt(issueId), memberList);
 
         logger.info("response: {}", response);
 
@@ -374,28 +340,5 @@ public class IssueController {
 
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/alluser")
-    public ResponseEntity<String> getAllUser(@RequestBody String data){
-
-        JSONObject response = new JSONObject();
-        response.put("code","200");
-        response.put("message","SUCCESS");
-        response.put("msg","성공");
-
-        JSONObject requestData = new JSONObject(data);
-        logger.info("parameter: {}", data.toString());
-
-        Map<String, String> parameter = new HashMap<>();
-
-        //전체 유저 리스트 Response 추가
-        List<UserVo> userList = issueService.getUserListAll(parameter);
-        JSONArray userListJson = new JSONArray(userList);
-        response.put("userAllList", userListJson);
-
-
-        logger.info("response: {}", response);
-
-        return ResponseEntity.ok(response.toString());
-    }
 
 }

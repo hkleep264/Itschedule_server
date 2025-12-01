@@ -10,7 +10,7 @@ public class IssueVo {
     private int issueId;
     private String name;
     private String content;
-    private int issueType;
+    private String issueType;
     private int issuePriority;
     private int issueStatus;
     private int managerUserId;

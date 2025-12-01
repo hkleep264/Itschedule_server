@@ -41,11 +41,6 @@ public class IssueService {
     }
 
     //프로젝트 리스트 가져오기
-    public List<BoardVo> getProjectList(Map<String, Object> parameter){
-        return issueRepository.getProjectList(parameter);
-    }
-
-    //프로젝트 리스트 가져오기
     public List<BoardVo> getProjectListWithMember(Map<String, Object> parameter){
         return issueRepository.getProjectListWithMember(parameter);
     }
@@ -56,7 +51,7 @@ public class IssueService {
     }
 
     //이슈 정보 수정
-    public void updateIssueInfo(Map<String, String> parameter){
+    public void updateIssueInfo(Map<String, Object> parameter){
         issueRepository.updateIssueInfo(parameter);
     }
 
@@ -70,18 +65,5 @@ public class IssueService {
         return issueRepository.getUserListForProject(parameter);
     }
 
-    //이슈 멤버 교체
-    public void updateProjectMemberList(int issueId, List<UserVo> memberList){
-//        위에 @Transactional 걸려 있어서 실패시 자동 Rollback 처리
-
-        //전체 멤버 클리어
-        issueRepository.clearIssueMember(issueId);
-        // 2) 새 멤버 없는 경우 종료
-        if (memberList == null || memberList.isEmpty()) {
-            return;
-        }
-
-        issueRepository.insertIssueMember(issueId, memberList);
-    }
 
 }

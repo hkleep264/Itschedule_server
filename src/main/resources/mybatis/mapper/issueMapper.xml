@@ -90,26 +90,6 @@
           AND i.`id` = #{issueId}
     </select>
 
-    <select id="getProjectList" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
-        SELECT
-            p.`id` AS projectId,
-            p.`name` AS projectName,
-            p.`content`,
-            p.`user_id` AS userId,
-            p.`start_dt` AS startDate,
-            p.`end_dt` AS endDate,
-            p.`updated`,
-            p.`created`
-        FROM tb_project p
-        <if test="isAdmin == 0 ">
-             JOIN tb_project_member m
-              ON(
-                  p.id = m.project_id
-                      AND m.user_id = #{userId}
-                  )
-        </if>
-    </select>
-
     <select id="getProjectListWithMember" resultType="com.itschedule.itschedule_server.vo.BoardVo" parameterType="map">
         SELECT
             p.id AS projectId,
@@ -133,34 +113,50 @@
 
     <insert id="insertIssueInfo" parameterType="map" useGeneratedKeys="true" keyProperty="id">
 
-        INSERT INTO `tb_project`(
+        INSERT INTO `tb_issue`
+        (
             `id`,
+            `project_id`,
             `name`,
             `content`,
-            `user_id`,
+            `issue_type`,
+            `issue_priority`,
+            `issue_status`,
+            `manager_user_id`,
+            `write_user_id`,
             `start_dt`,
             `end_dt`,
             `updated`,
             `created`
         )
-        VALUES(
-                  NULL,
-                  #{name},
-                  #{content},
-                  #{userId},
-                  #{startDate},
-                  #{endDate},
-                  NOW(),
-                  NOW()
-              )
+        VALUES
+        (
+            NULL,
+            #{projectId},
+            #{name},
+            #{content},
+            #{issueType},
+            #{priority},
+            DEFAULT,
+            #{assigneeId},
+            #{userId},
+            #{startDate},
+            #{endDate},
+            NOW(),
+            NOW()
+        )
     </insert>
 
     <update id="updateIssueInfo" parameterType="map">
 
-        UPDATE `tb_project`
+        UPDATE `tb_issue`
         SET
             `name` = #{name},
             `content` = #{content},
+            `issue_type` = #{issueType},
+            `issue_priority` = #{issuePriority},
+            `issue_status` = #{issueStatus},
+            `manager_user_id` = #{assigneeId},
             `start_dt` = #{startDate},
             `end_dt` = #{endDate},
             `updated` = NOW()
@@ -194,27 +190,6 @@
           AND p.project_id = #{projectId}
     </select>
 
-    <delete id="clearIssueMember" parameterType="Integer">
-
-        DELETE FROM `tb_project_member`
-            WHERE `project_id` = #{projectId}
-    </delete>
-
-    <insert id="insertIssueMember" parameterType="map">
-
-        INSERT INTO tb_project_member (
-            project_id,
-            user_id,
-            updated,
-            created
-            )
-        VALUES
-        <foreach collection="memberList"
-                 item="member"
-                 separator=",">
-            (#{projectId}, #{member.userId}, NOW(), NOW())
-        </foreach>
-    </insert>
 
 
 </mapper>
