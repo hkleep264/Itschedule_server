@@ -141,5 +141,16 @@
         </foreach>
     </insert>
 
+    <update id="boardQuickUpdate" parameterType="map">
+
+        UPDATE `tb_project`
+        SET
+            `start_dt` = #{startDate},
+            `end_dt` = #{endDate},
+            `updated` = NOW()
+        WHERE `id` = #{boardId}
+
+    </update>
+
 
 </mapper>

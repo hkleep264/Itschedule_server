@@ -120,7 +120,7 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/list")
-    public ResponseEntity<String> boardList(@RequestBody String data){
+    public ResponseEntity<String> boardList(@RequestBody String data, HttpServletRequest request){
 
         JSONObject response = new JSONObject();
         response.put("code","200");
@@ -132,6 +132,14 @@ public class BoardController {
         logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
+
+        HttpSession session = request.getSession();
+        Boolean isAdminB = (Boolean) session.getAttribute("isAdmin");
+        //관리자 아닐경우 그냥 리턴
+        if(!isAdminB){
+            logger.info("관리자가 아닙니다.");
+            return ResponseEntity.ok(response.toString());
+        }
 
 
         int size = 10;
@@ -302,6 +310,50 @@ public class BoardController {
         JSONArray userListJson = new JSONArray(userList);
         response.put("userAllList", userListJson);
 
+
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
+    }
+
+    //캘린더 이동으로 빠른 날짜 수정
+    @RequestMapping(method = RequestMethod.POST, value = "/quick_update")
+    public ResponseEntity<String> boardQuickUpdate(@RequestBody String data){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+        logger.info("parameter requestData: {}", requestData.toString());
+
+        Map<String, Object> parameter = new HashMap<>();
+
+        if(requestData.has("boardId")
+                && requestData.has("startDate")
+                && requestData.has("endDate")){
+
+            int boardId = requestData.getInt("boardId");
+            parameter.put("boardId", boardId);
+
+            String startDate = requestData.getString("startDate").substring(0, 10);
+            String endDate = requestData.getString("endDate").substring(0, 10);
+            startDate += " 00:00:00";
+            endDate += " 23:59:59";
+            parameter.put("startDate", startDate);
+            parameter.put("endDate", endDate);
+
+        }else{
+            response.put("code","999");
+            response.put("message","Parameter Invalid");
+            response.put("msg","파라미터 누락");
+
+            return ResponseEntity.ok(response.toString());
+        }
+
+        boardService.boardQuickUpdate(parameter);
 
         logger.info("response: {}", response);
 

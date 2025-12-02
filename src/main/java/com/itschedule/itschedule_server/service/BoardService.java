@@ -74,4 +74,9 @@ public class BoardService {
         boardRepository.insertBoardMember(boardId, memberList);
     }
 
+    //캘린더에서 이동하여 날짜값 빠른 업데이트
+    public void boardQuickUpdate(Map<String, Object> parameter){
+        boardRepository.boardQuickUpdate(parameter);
+    }
+
 }

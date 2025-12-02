@@ -190,6 +190,17 @@
           AND p.project_id = #{projectId}
     </select>
 
+    <update id="issueQuickUpdate" parameterType="map">
+
+        UPDATE `tb_issue`
+        SET
+            `start_dt` = #{startDate},
+            `end_dt` = #{endDate},
+            `updated` = NOW()
+        WHERE `id` = #{boardId}
+
+    </update>
+
 
 
 </mapper>

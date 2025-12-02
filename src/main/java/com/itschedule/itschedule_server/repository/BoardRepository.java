@@ -21,4 +21,5 @@ public interface BoardRepository {
     List<UserVo> getUserListForProject(Map<String, String> parameter);
     void clearBoardMember(@Param("boardId") int boardId);
     void insertBoardMember(@Param("boardId") int boardId,  @Param("memberList") List<UserVo> memberList);
+    void boardQuickUpdate(Map<String, Object> parameter);
 }

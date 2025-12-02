@@ -65,5 +65,10 @@ public class IssueService {
         return issueRepository.getUserListForProject(parameter);
     }
 
+    //캘린더에서 이동하여 날짜값 빠른 업데이트
+    public void issueQuickUpdate(Map<String, Object> parameter){
+        issueRepository.issueQuickUpdate(parameter);
+    }
+
 
 }
