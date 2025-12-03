@@ -384,7 +384,7 @@ public class IssueController {
         return ResponseEntity.ok(response.toString());
     }
 
-    //이슈 리스트
+    //Todo 리스트
     @RequestMapping(method = RequestMethod.POST, value = "/todo_list")
     public ResponseEntity<String> issueTodoList(@RequestBody String data, HttpServletRequest request){
 
@@ -408,39 +408,49 @@ public class IssueController {
         parameter.put("userId", userId);
         parameter.put("isAdmin", isAdmin);
 
-        int size = 10;
-        int page = 1;
+        List<IssueVo> issueList = issueService.getIssueTodoList(parameter);
 
-        if(requestData.has("page")){
-            page = requestData.getInt("page");
-        }
-
-        if(requestData.has("size")){
-            size = requestData.getInt("size");
-        }
-
-        if(requestData.has("projectName")){
-            parameter.put("projectName", requestData.getString("projectName"));
-        }
-
-        int pageSize = size <= 0 ? 10 : size;
-        int pageNo = page <= 0 ? 1 : page;
-        int offset = (pageNo - 1) * pageSize;
-
-        parameter.put("size", size);
-        parameter.put("offset", offset);
-
-        List<IssueVo> issueList = issueService.getIssueList(parameter);
-        int totalCount = issueService.issueListTotalCount(parameter);
-
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         JSONArray issueListJson = new JSONArray(issueList);
         response.put("list", issueListJson);
-        response.put("page", pageNo);
-        response.put("size", pageSize);
-        response.put("totalCount", totalCount);
-        response.put("totalPages", totalPages);
 
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
+    }
+
+    //TodoList 별 표시 변경
+    @RequestMapping(method = RequestMethod.POST, value = "/important_update")
+    public ResponseEntity<String> issueImportantUpdate(@RequestBody String data){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+        logger.info("parameter requestData: {}", requestData.toString());
+
+        Map<String, Object> parameter = new HashMap<>();
+
+        if(requestData.has("issueId")
+                && requestData.has("isImportant")){
+
+            int issueId = requestData.getInt("issueId");
+            parameter.put("issueId", issueId);
+
+            int isImportant = requestData.getInt("isImportant");
+            parameter.put("isImportant", isImportant);
+
+        }else{
+            response.put("code","999");
+            response.put("message","Parameter Invalid");
+            response.put("msg","파라미터 누락");
+
+            return ResponseEntity.ok(response.toString());
+        }
+
+        issueService.issueImportantUpdate(parameter);
 
         logger.info("response: {}", response);
 

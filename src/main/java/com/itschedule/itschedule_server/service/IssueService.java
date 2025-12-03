@@ -55,11 +55,6 @@ public class IssueService {
         issueRepository.updateIssueInfo(parameter);
     }
 
-    //전체 유저 가져오기
-    public List<UserVo> getUserListAll(Map<String, String> parameter){
-        return issueRepository.getUserListAll(parameter);
-    }
-
     //이슈 멤버 가져오기
     public List<UserVo> getUserListForProject(Map<String, String> parameter){
         return issueRepository.getUserListForProject(parameter);
@@ -70,9 +65,14 @@ public class IssueService {
         issueRepository.issueQuickUpdate(parameter);
     }
 
-    //이슈 Todo 리스트 가져오기
+    //이슈 TodoList 가져오기
     public List<IssueVo> getIssueTodoList(Map<String, Object> parameter){
         return issueRepository.getIssueTodoList(parameter);
+    }
+
+    //TodoList 별 표시 변경
+    public void issueImportantUpdate(Map<String, Object> parameter){
+        issueRepository.issueImportantUpdate(parameter);
     }
 
 

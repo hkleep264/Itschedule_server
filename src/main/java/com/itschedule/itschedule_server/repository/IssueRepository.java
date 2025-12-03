@@ -19,8 +19,8 @@ public interface IssueRepository {
     List<BoardVo> getProjectListWithMember(Map<String, Object> parameter);
     void insertIssueInfo(Map<String, Object> parameter);
     void updateIssueInfo(Map<String, Object> parameter);
-    List<UserVo> getUserListAll(Map<String, String> parameter);
     List<UserVo> getUserListForProject(Map<String, String> parameter);
     void issueQuickUpdate(Map<String, Object> parameter);
     List<IssueVo> getIssueTodoList(Map<String, Object> parameter);
+    void issueImportantUpdate(Map<String, Object> parameter);
 }

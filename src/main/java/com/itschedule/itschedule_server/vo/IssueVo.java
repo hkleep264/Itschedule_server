@@ -15,6 +15,7 @@ public class IssueVo {
     private int issueStatus;
     private int managerUserId;
     private int writeUserId;
+    private int isImportant;
     private String startDate;
     private String endDate;
     private String updated;
@@ -23,6 +24,8 @@ public class IssueVo {
     private String projectName;
     private String managerName;
     private String writerName;
+
+    private int isToday;
 
 
 }

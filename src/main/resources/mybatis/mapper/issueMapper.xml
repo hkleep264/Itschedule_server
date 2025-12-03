@@ -14,6 +14,7 @@
             i.`issue_status` AS issueStatus,
             i.`manager_user_id` AS managerUserId,
             i.`write_user_id` AS writeUserId,
+            i.`is_important` AS isImportant,
             i.`start_dt` AS startDate,
             i.`end_dt` AS endDate,
             i.`updated`,
@@ -73,6 +74,7 @@
             i.`issue_status` AS issueStatus,
             i.`manager_user_id` AS managerUserId,
             i.`write_user_id` AS writeUserId,
+            i.`is_important` AS isImportant,
             i.`start_dt` AS startDate,
             i.`end_dt` AS endDate,
             i.`updated`,
@@ -124,6 +126,7 @@
             `issue_status`,
             `manager_user_id`,
             `write_user_id`,
+            `is_important`,
             `start_dt`,
             `end_dt`,
             `updated`,
@@ -140,6 +143,7 @@
             DEFAULT,
             #{assigneeId},
             #{userId},
+            DEFAULT,
             #{startDate},
             #{endDate},
             NOW(),
@@ -163,19 +167,6 @@
         WHERE `id` = #{issueId}
 
     </update>
-
-    <select id="getUserListAll" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
-
-        SELECT
-            `id` AS userId,
-            `name` AS userName,
-            `email`,
-            `is_email_auth` AS isEmailAuth,
-            `is_admin` AS isAdmin,
-            `updated`,
-            `created`
-        FROM `tb_user`
-    </select>
 
     <select id="getUserListForProject" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
 
@@ -213,13 +204,18 @@
         i.`issue_status` AS issueStatus,
         i.`manager_user_id` AS managerUserId,
         i.`write_user_id` AS writeUserId,
+        i.`is_important` AS isImportant,
         i.`start_dt` AS startDate,
         i.`end_dt` AS endDate,
         i.`updated`,
         i.`created`,
         b.`name` AS projectName,
         manager.`name` AS managerName,
-        writer.`name` AS writerName
+        writer.`name` AS writerName,
+        CASE
+            WHEN CURDATE() BETWEEN i.`start_dt` AND i.`end_dt` THEN 1
+            ELSE 0
+        END AS isToday
         FROM tb_issue i
         JOIN tb_project b ON i.project_id = b.id
         JOIN tb_user manager ON i.manager_user_id = manager.id
@@ -232,10 +228,20 @@
             )
         </if>
 
-        WHERE i.`issue_type` = '개인 이슈'
+        WHERE i.`issue_type` = '3'
 
         ORDER BY i.`id` DESC
     </select>
+
+    <update id="issueImportantUpdate" parameterType="map">
+
+        UPDATE `tb_issue`
+        SET
+            `is_important` = #{isImportant},
+            `updated` = NOW()
+        WHERE `id` = #{issueId}
+
+    </update>
 
 
 
