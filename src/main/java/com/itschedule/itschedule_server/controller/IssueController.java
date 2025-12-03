@@ -254,8 +254,8 @@ public class IssueController {
 
             parameter.put("name", requestData.getString("name"));
             parameter.put("projectId", requestData.getInt("projectId"));
-            parameter.put("issueType", requestData.getString("issueType"));
-            parameter.put("priority", requestData.getString("priority"));
+            parameter.put("issueType", requestData.getInt("issueType"));
+            parameter.put("priority", requestData.getInt("priority"));
             parameter.put("content", requestData.getString("content"));
             parameter.put("assigneeId", requestData.getString("assigneeId"));
             parameter.put("startDate", requestData.getString("startDate"));
@@ -309,7 +309,7 @@ public class IssueController {
 
             parameter.put("issueId", issueId);
             parameter.put("name", requestData.getString("name"));
-            parameter.put("issueType", requestData.getString("issueType"));
+            parameter.put("issueType", requestData.getInt("issueType"));
             parameter.put("issuePriority", requestData.getInt("issuePriority"));
             parameter.put("issueStatus", requestData.getInt("issueStatus"));
             parameter.put("content", requestData.getString("content"));
@@ -378,6 +378,69 @@ public class IssueController {
         }
 
         issueService.issueQuickUpdate(parameter);
+
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
+    }
+
+    //이슈 리스트
+    @RequestMapping(method = RequestMethod.POST, value = "/todo_list")
+    public ResponseEntity<String> issueTodoList(@RequestBody String data, HttpServletRequest request){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+        logger.info("parameter requestData: {}", requestData.toString());
+
+
+        HttpSession session = request.getSession();
+        int userId = (int) session.getAttribute("userId");
+        Boolean isAdminB = (Boolean) session.getAttribute("isAdmin");
+        int isAdmin = isAdminB ? 1 : 0;
+
+        Map<String, Object> parameter = new HashMap<>();
+
+        parameter.put("userId", userId);
+        parameter.put("isAdmin", isAdmin);
+
+        int size = 10;
+        int page = 1;
+
+        if(requestData.has("page")){
+            page = requestData.getInt("page");
+        }
+
+        if(requestData.has("size")){
+            size = requestData.getInt("size");
+        }
+
+        if(requestData.has("projectName")){
+            parameter.put("projectName", requestData.getString("projectName"));
+        }
+
+        int pageSize = size <= 0 ? 10 : size;
+        int pageNo = page <= 0 ? 1 : page;
+        int offset = (pageNo - 1) * pageSize;
+
+        parameter.put("size", size);
+        parameter.put("offset", offset);
+
+        List<IssueVo> issueList = issueService.getIssueList(parameter);
+        int totalCount = issueService.issueListTotalCount(parameter);
+
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        JSONArray issueListJson = new JSONArray(issueList);
+        response.put("list", issueListJson);
+        response.put("page", pageNo);
+        response.put("size", pageSize);
+        response.put("totalCount", totalCount);
+        response.put("totalPages", totalPages);
+
 
         logger.info("response: {}", response);
 

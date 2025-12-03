@@ -70,5 +70,10 @@ public class IssueService {
         issueRepository.issueQuickUpdate(parameter);
     }
 
+    //이슈 Todo 리스트 가져오기
+    public List<IssueVo> getIssueTodoList(Map<String, Object> parameter){
+        return issueRepository.getIssueTodoList(parameter);
+    }
+
 
 }

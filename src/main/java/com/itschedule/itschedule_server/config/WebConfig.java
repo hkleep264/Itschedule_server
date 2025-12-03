@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    //Real 에서는 주석 처리 해야함
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/schedule/**")

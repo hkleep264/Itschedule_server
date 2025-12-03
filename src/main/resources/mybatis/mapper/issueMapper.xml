@@ -201,6 +201,42 @@
 
     </update>
 
+    <select id="getIssueTodoList" resultType="com.itschedule.itschedule_server.vo.IssueVo" parameterType="map">
+
+        SELECT
+        i.`id` AS issueId,
+        i.`project_id` AS projectId,
+        i.`name`,
+        i.`content`,
+        i.`issue_type` AS issueType,
+        i.`issue_priority` AS issuePriority,
+        i.`issue_status` AS issueStatus,
+        i.`manager_user_id` AS managerUserId,
+        i.`write_user_id` AS writeUserId,
+        i.`start_dt` AS startDate,
+        i.`end_dt` AS endDate,
+        i.`updated`,
+        i.`created`,
+        b.`name` AS projectName,
+        manager.`name` AS managerName,
+        writer.`name` AS writerName
+        FROM tb_issue i
+        JOIN tb_project b ON i.project_id = b.id
+        JOIN tb_user manager ON i.manager_user_id = manager.id
+        JOIN tb_user writer ON b.user_id = writer.id
+        <if test="isAdmin == 0 ">
+            JOIN tb_project_member member
+            ON
+            (member.project_id = i.project_id
+            AND member.user_id = #{userId}
+            )
+        </if>
+
+        WHERE i.`issue_type` = '개인 이슈'
+
+        ORDER BY i.`id` DESC
+    </select>
+
 
 
 </mapper>
