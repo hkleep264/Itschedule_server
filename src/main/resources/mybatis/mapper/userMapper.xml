@@ -57,5 +57,57 @@
               )
     </insert>
 
+    <select id="getUserList" resultType="com.itschedule.itschedule_server.vo.UserVo" parameterType="map">
+
+        SELECT
+            `id`,
+            `name`,
+            `email`,
+            `is_email_auth` AS isEmailAuth,
+            `is_admin` AS isAdmin,
+            `updated`,
+            `created`
+        FROM `tb_user`
+        WHERE
+            1=1
+        <if test="userName != null and userName != ''">
+            AND `name` LIKE CONCAT('%', #{userName}, '%')
+        </if>
+        ORDER BY `id` DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="userListTotalCount" resultType="int" parameterType="map">
+
+        SELECT
+        count(*)
+        FROM `tb_user`
+        WHERE
+        1=1
+        <if test="userName != null and userName != ''">
+            AND `name` LIKE CONCAT('%', #{userName}, '%')
+        </if>
+    </select>
+
+    <update id="userAuthUpdate" parameterType="map">
+
+        UPDATE `tb_user`
+        SET
+            `is_email_auth` = #{auth},
+            `updated` = NOW()
+        WHERE `id` = #{userId}
+
+    </update>
+
+    <update id="userAdminUpdate" parameterType="map">
+
+        UPDATE `tb_user`
+        SET
+            `is_admin` = #{adminAuth},
+            `updated` = NOW()
+        WHERE `id` = #{userId}
+
+    </update>
+
 
 </mapper>

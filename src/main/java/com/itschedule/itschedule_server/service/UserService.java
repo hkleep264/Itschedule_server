@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Transactional
@@ -34,6 +35,27 @@ public class UserService {
     //유저 추가
     public void insertUser(Map<String, String> parameter){
         userRepository.insertUser(parameter);
+    }
+
+    //유저 리스트 가져오기
+    public List<UserVo> getUserList(Map<String, Object> parameter){
+        return userRepository.getUserList(parameter);
+    }
+
+    //유저 전체 리스트 갯수 져오기
+    public int userListTotalCount(Map<String, Object> parameter){
+        Integer cnt = userRepository.userListTotalCount(parameter);
+        return cnt == null ? 0 : cnt;
+    }
+
+    //유저 인증 정보 업데이트
+    public void userAuthUpdate(Map<String, Object> parameter){
+        userRepository.userAuthUpdate(parameter);
+    }
+
+    //유저 관리자 정보 업데이트
+    public void userAdminUpdate(Map<String, Object> parameter){
+        userRepository.userAdminUpdate(parameter);
     }
 
 
