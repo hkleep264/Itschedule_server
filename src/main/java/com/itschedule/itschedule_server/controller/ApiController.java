@@ -73,6 +73,12 @@ public class ApiController {
 
         if(userInfo != null) {
             if(ConvertUtils.checkPassword(passwordPlain, userInfo.getPassword())) {
+                if(!userInfo.getIsEmailAuth().equals("1")){
+                    response.put("code","203");
+                    response.put("message","관리자에게 권한 인증 요청해주세요.");
+                    response.put("msg","관리자에게 권한 인증 요청해주세요.");
+                    return ResponseEntity.ok(response.toString());
+                }
                 userInfoString = ConvertUtils.userVoToJson(userInfo);
                 //로그인 성공
                 //세션 처리
