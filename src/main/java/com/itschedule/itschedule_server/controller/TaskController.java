@@ -52,6 +52,8 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.POST, value = "/list")
     public ResponseEntity<String> taskList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("taskList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -59,8 +61,6 @@ public class TaskController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -87,6 +87,8 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.POST, value = "/quick_update")
     public ResponseEntity<String> taskQuickUpdate(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("taskQuickUpdate");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -94,8 +96,6 @@ public class TaskController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -130,6 +130,8 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.POST, value = "/update")
     public ResponseEntity<String> taskUpdate(@RequestBody String data){
 
+        logger.info("taskUpdate");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -137,7 +139,6 @@ public class TaskController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
 

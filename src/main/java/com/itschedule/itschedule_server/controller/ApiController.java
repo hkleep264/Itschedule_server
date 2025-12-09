@@ -41,7 +41,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public ResponseEntity<String> getUserInfoForLogin(@RequestBody String data,
                                                       HttpServletRequest request){
-        logger.info("test");
+        logger.info("login");
 
         JSONObject response = new JSONObject();
         response.put("code","200");
@@ -110,6 +110,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/logout")
     public void logout(HttpServletRequest request){
 
+        logger.info("logout");
         //세션 만료 처리
         HttpSession session = request.getSession();
         session.invalidate();
@@ -140,6 +141,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/signup")
     public ResponseEntity<String> signup(@RequestBody String data){
 
+        logger.info("signup");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -189,6 +191,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/list")
     public ResponseEntity<String> userList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("userList");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -196,7 +199,6 @@ public class ApiController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
 
         HttpSession session = request.getSession();
@@ -261,6 +263,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/auth_update")
     public ResponseEntity<String> userAuthUpdate(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("userAuthUpdate");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -310,6 +313,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/admin_update")
     public ResponseEntity<String> userAdminUpdate(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("userAdminUpdate");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -359,6 +363,7 @@ public class ApiController {
     @RequestMapping(method = RequestMethod.POST, value = "/alert_list")
     public ResponseEntity<String> getAlertList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("alert_list");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -366,8 +371,6 @@ public class ApiController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -390,7 +393,7 @@ public class ApiController {
     //유저 인증 업데이트
     @RequestMapping(method = RequestMethod.POST, value = "/alert_status_update")
     public ResponseEntity<String> alertStatusUpdate(@RequestBody String data, HttpServletRequest request){
-
+        logger.info("alert_status_update");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");

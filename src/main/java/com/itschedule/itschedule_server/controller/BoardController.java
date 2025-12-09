@@ -52,6 +52,8 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/insert")
     public ResponseEntity<String> insertBoard(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("insertBoard");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -101,15 +103,12 @@ public class BoardController {
                 new TypeReference<List<UserVo>>() {}
         );
 
-        log.info("memberList: {}", memberList);
-
         //프로젝트 추가
         boardService.insertBoardInfo(parameter);
 
         if(parameter.get("id") != null){
             BigInteger boardIdTemp = (BigInteger) parameter.get("id");
             int boardId = boardIdTemp.intValue();
-            log.info("boardId: {}", boardId);
             //멤버 추가
             //멤버 정보 바꾸기
             boardService.updateProjectMemberList(boardId, memberList);
@@ -135,6 +134,8 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/list")
     public ResponseEntity<String> boardList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("boardList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -142,7 +143,6 @@ public class BoardController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
 
@@ -197,6 +197,8 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/info")
     public ResponseEntity<String> boardInfo(@RequestBody String data){
 
+        logger.info("boardInfo");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -238,6 +240,8 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/update")
     public ResponseEntity<String> updateBoard(@RequestBody String data){
 
+        logger.info("updateBoard");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -274,7 +278,6 @@ public class BoardController {
 
             return ResponseEntity.ok(response.toString());
         }
-        log.info("update parameter: {}", parameter);
 
         //유저 정보 업데이트
         ObjectMapper mapper = new ObjectMapper();
@@ -291,8 +294,6 @@ public class BoardController {
                 arrayNode,
                 new TypeReference<List<UserVo>>() {}
         );
-
-        log.info("memberList: {}", memberList);
 
         //게시물 정보 바꾸기
         boardService.updateBoardInfo(parameter);
@@ -319,6 +320,8 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/alluser")
     public ResponseEntity<String> getAllUser(@RequestBody String data){
 
+        logger.info("getAllUser");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -344,15 +347,15 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, value = "/quick_update")
     public ResponseEntity<String> boardQuickUpdate(@RequestBody String data){
 
+        logger.info("boardQuickUpdate");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
         response.put("msg","성공");
 
-        log.info("quick_update");
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
 
@@ -380,7 +383,6 @@ public class BoardController {
 
         boardService.boardQuickUpdate(parameter);
 
-        log.info("boardQuickUpdate");
         //날짜 변경 후 유저 들 알림
         List<UserVo> memberList = boardService.getUserListForProject(parameter);
         if(!memberList.isEmpty()){

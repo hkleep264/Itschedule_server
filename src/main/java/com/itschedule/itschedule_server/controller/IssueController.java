@@ -56,6 +56,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/list")
     public ResponseEntity<String> issueList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("issueList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -63,8 +65,6 @@ public class IssueController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -118,6 +118,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/info")
     public ResponseEntity<String> issueInfo(@RequestBody String data){
 
+        logger.info("issueInfo");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -160,6 +162,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/projectList")
     public ResponseEntity<String> projectList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("projectList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -194,6 +198,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/memberList")
     public ResponseEntity<String> memberList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("memberList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -201,8 +207,6 @@ public class IssueController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -235,6 +239,8 @@ public class IssueController {
     //프로젝트 추가
     @RequestMapping(method = RequestMethod.POST, value = "/insert")
     public ResponseEntity<String> insertIssue(@RequestBody String data, HttpServletRequest request){
+
+        logger.info("insertIssue");
 
         JSONObject response = new JSONObject();
         response.put("code","200");
@@ -281,7 +287,6 @@ public class IssueController {
 
         BigInteger boardIdTemp = (BigInteger) parameter.get("id");
         int issueId = boardIdTemp.intValue();
-        log.info("issueId: {}", issueId);
 
         //유저 알림 추가
         parameter.put("userId", requestData.getString("assigneeId"));
@@ -298,6 +303,8 @@ public class IssueController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/update")
     public ResponseEntity<String> updateIssue(@RequestBody String data){
+
+        logger.info("updateIssue");
 
         JSONObject response = new JSONObject();
         response.put("code","200");
@@ -343,7 +350,6 @@ public class IssueController {
 
             return ResponseEntity.ok(response.toString());
         }
-        log.info("update parameter: {}", parameter);
 
         //게시물 정보 바꾸기
         issueService.updateIssueInfo(parameter);
@@ -358,7 +364,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/quick_update")
     public ResponseEntity<String> issueQuickUpdate(@RequestBody String data){
 
-        log.info("issue quick_update");
+        logger.info("issueQuickUpdate");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -366,7 +373,6 @@ public class IssueController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
 
@@ -412,6 +418,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/todo_list")
     public ResponseEntity<String> issueTodoList(@RequestBody String data, HttpServletRequest request){
 
+        logger.info("issueTodoList");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -419,8 +427,6 @@ public class IssueController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
-
 
         HttpSession session = request.getSession();
         int userId = (int) session.getAttribute("userId");
@@ -446,6 +452,8 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/important_update")
     public ResponseEntity<String> issueImportantUpdate(@RequestBody String data){
 
+        logger.info("issueImportantUpdate");
+
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -453,7 +461,6 @@ public class IssueController {
 
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
-        logger.info("parameter requestData: {}", requestData.toString());
 
         Map<String, Object> parameter = new HashMap<>();
 
