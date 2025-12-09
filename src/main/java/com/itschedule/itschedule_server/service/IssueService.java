@@ -36,7 +36,7 @@ public class IssueService {
     }
 
     //이슈 정보 가져오기
-    public IssueVo getIssueInfo(Map<String, String> parameter){
+    public IssueVo getIssueInfo(Map<String, Object> parameter){
         return issueRepository.getIssueInfo(parameter);
     }
 
@@ -56,7 +56,7 @@ public class IssueService {
     }
 
     //이슈 멤버 가져오기
-    public List<UserVo> getUserListForProject(Map<String, String> parameter){
+    public List<UserVo> getUserListForProject(Map<String, Object> parameter){
         return issueRepository.getUserListForProject(parameter);
     }
 

@@ -1,6 +1,7 @@
 package com.itschedule.itschedule_server.service;
 
 import com.itschedule.itschedule_server.repository.UserRepository;
+import com.itschedule.itschedule_server.vo.AlertVo;
 import com.itschedule.itschedule_server.vo.UserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,21 @@ public class UserService {
     //유저 관리자 정보 업데이트
     public void userAdminUpdate(Map<String, Object> parameter){
         userRepository.userAdminUpdate(parameter);
+    }
+
+    //이벤트 알림 추가
+    public void insertUserEvent(Map<String, Object> parameter){
+        userRepository.insertUserEvent(parameter);
+    }
+
+    //이벤트 알림 수정
+    public void updateUserEvent(Map<String, Object> parameter){
+        userRepository.updateUserEvent(parameter);
+    }
+
+    //이벤트 알림 리스트 가져오기
+    public List<AlertVo> getAlertList(Map<String, Object> parameter){
+        return userRepository.getAlertList(parameter);
     }
 
 

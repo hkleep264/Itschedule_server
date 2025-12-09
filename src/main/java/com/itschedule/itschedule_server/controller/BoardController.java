@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itschedule.itschedule_server.enums.AlertMessages;
 import com.itschedule.itschedule_server.service.BoardService;
+import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.vo.BoardVo;
 import com.itschedule.itschedule_server.vo.UserVo;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,11 +35,13 @@ public class BoardController {
     private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
     private static BoardService boardService = null;
-    private static final BoardController _instance = new BoardController(boardService);
+    private static UserService userService = null;
+    private static final BoardController _instance = new BoardController(boardService, userService);
 
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardService boardService, UserService userService) {
 
         BoardController.boardService = boardService;
+        BoardController.userService = userService;
     }
 
     public static BoardController getInstance() {
@@ -109,9 +113,18 @@ public class BoardController {
             //멤버 추가
             //멤버 정보 바꾸기
             boardService.updateProjectMemberList(boardId, memberList);
+
+            //각 멤버 알림 추가
+            if(!memberList.isEmpty()) {
+                for (UserVo member : memberList) {
+                    parameter.put("userId", member.getUserId());
+                    parameter.put("content", AlertMessages.PROJECT_MEMBER_ADD.getSentence());
+                    parameter.put("type", AlertMessages.PROJECT_MEMBER_ADD.getMsgType());
+                    parameter.put("targetId", boardId);
+                    userService.insertUserEvent(parameter);
+                }
+            }
         }
-
-
 
         logger.info("response: {}", response);
 
@@ -192,7 +205,7 @@ public class BoardController {
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
 
-        Map<String, String> parameter = new HashMap<>();
+        Map<String, Object> parameter = new HashMap<>();
 
         if(requestData.has("boardId")){
 
@@ -233,7 +246,7 @@ public class BoardController {
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
 
-        Map<String, String> parameter = new HashMap<>();
+        Map<String, Object> parameter = new HashMap<>();
         String boardId = "";
         if(requestData.has("boardId")
                 && requestData.has("name")
@@ -286,6 +299,17 @@ public class BoardController {
         //멤버 정보 바꾸기
         boardService.updateProjectMemberList(Integer.parseInt(boardId), memberList);
 
+        //각 멤버 알림 추가
+        if(!memberList.isEmpty()) {
+            for (UserVo member : memberList) {
+                parameter.put("userId", member.getUserId());
+                parameter.put("content", AlertMessages.PROJECT_MEMBER_ADD.getSentence());
+                parameter.put("type", AlertMessages.PROJECT_MEMBER_ADD.getMsgType());
+                parameter.put("targetId", boardId);
+                userService.insertUserEvent(parameter);
+            }
+        }
+
         logger.info("response: {}", response);
 
         return ResponseEntity.ok(response.toString());
@@ -325,6 +349,7 @@ public class BoardController {
         response.put("message","SUCCESS");
         response.put("msg","성공");
 
+        log.info("quick_update");
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
         logger.info("parameter requestData: {}", requestData.toString());
@@ -354,6 +379,21 @@ public class BoardController {
         }
 
         boardService.boardQuickUpdate(parameter);
+
+        log.info("boardQuickUpdate");
+        //날짜 변경 후 유저 들 알림
+        List<UserVo> memberList = boardService.getUserListForProject(parameter);
+        if(!memberList.isEmpty()){
+            log.info("here");
+            for (UserVo member : memberList) {
+                parameter.put("userId", member.getUserId());
+                parameter.put("content", AlertMessages.CHANGE_PROJECT_DATE.getSentence());
+                parameter.put("type", AlertMessages.CHANGE_PROJECT_DATE.getMsgType());
+                parameter.put("targetId", parameter.get("boardId"));
+                log.info("parameter: {}", parameter);
+                userService.insertUserEvent(parameter);
+            }
+        }
 
         logger.info("response: {}", response);
 

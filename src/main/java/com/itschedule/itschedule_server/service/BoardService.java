@@ -36,7 +36,7 @@ public class BoardService {
     }
 
     //프로젝트 정보 가져오기
-    public BoardVo getBoardInfo(Map<String, String> parameter){
+    public BoardVo getBoardInfo(Map<String, Object> parameter){
         return boardRepository.getBoardInfo(parameter);
     }
 
@@ -46,7 +46,7 @@ public class BoardService {
     }
 
     //프로젝트 정보 수정
-    public void updateBoardInfo(Map<String, String> parameter){
+    public void updateBoardInfo(Map<String, Object> parameter){
         boardRepository.updateBoardInfo(parameter);
     }
 
@@ -56,7 +56,7 @@ public class BoardService {
     }
 
     //프로젝트 멤버 가져오기
-    public List<UserVo> getUserListForProject(Map<String, String> parameter){
+    public List<UserVo> getUserListForProject(Map<String, Object> parameter){
         return boardRepository.getUserListForProject(parameter);
     }
 

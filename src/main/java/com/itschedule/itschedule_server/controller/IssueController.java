@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itschedule.itschedule_server.enums.AlertMessages;
 import com.itschedule.itschedule_server.service.IssueService;
+import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
 import com.itschedule.itschedule_server.vo.BoardVo;
 import com.itschedule.itschedule_server.vo.IssueVo;
@@ -36,11 +38,14 @@ public class IssueController {
     private static final Logger logger = LoggerFactory.getLogger(IssueController.class);
 
     private static IssueService issueService = null;
-    private static final IssueController _instance = new IssueController(issueService);
+    private static UserService userService = null;
 
-    public IssueController(IssueService issueService) {
+    private static final IssueController _instance = new IssueController(issueService, userService);
+
+    public IssueController(IssueService issueService, UserService userService) {
 
         IssueController.issueService = issueService;
+        IssueController.userService = userService;
     }
 
     public static IssueController getInstance() {
@@ -121,7 +126,7 @@ public class IssueController {
         JSONObject requestData = new JSONObject(data);
         logger.info("parameter: {}", data.toString());
 
-        Map<String, String> parameter = new HashMap<>();
+        Map<String, Object> parameter = new HashMap<>();
 
         if(requestData.has("issueId")){
 
@@ -204,7 +209,7 @@ public class IssueController {
         Boolean isAdminB = (Boolean) session.getAttribute("isAdmin");
         int isAdmin = isAdminB ? 1 : 0;
 
-        Map<String, String> parameter = new HashMap<>();
+        Map<String, Object> parameter = new HashMap<>();
 
         if(requestData.has("projectId")){
             int projectId = requestData.getInt("projectId");
@@ -271,16 +276,25 @@ public class IssueController {
             return ResponseEntity.ok(response.toString());
         }
 
-        //프로젝트 추가
+        //이슈 추가
         issueService.insertIssueInfo(parameter);
+
+        BigInteger boardIdTemp = (BigInteger) parameter.get("id");
+        int issueId = boardIdTemp.intValue();
+        log.info("issueId: {}", issueId);
+
+        //유저 알림 추가
+        parameter.put("userId", requestData.getString("assigneeId"));
+        parameter.put("content", AlertMessages.ISSUE_ADD.getSentence());
+        parameter.put("type", AlertMessages.ISSUE_ADD.getMsgType());
+        parameter.put("targetId", issueId);
+        userService.insertUserEvent(parameter);
 
         logger.info("response: {}", response);
 
         return ResponseEntity.ok(response.toString());
 
     }
-
-
 
     @RequestMapping(method = RequestMethod.POST, value = "/update")
     public ResponseEntity<String> updateIssue(@RequestBody String data){
@@ -344,6 +358,7 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/quick_update")
     public ResponseEntity<String> issueQuickUpdate(@RequestBody String data){
 
+        log.info("issue quick_update");
         JSONObject response = new JSONObject();
         response.put("code","200");
         response.put("message","SUCCESS");
@@ -378,6 +393,15 @@ public class IssueController {
         }
 
         issueService.issueQuickUpdate(parameter);
+
+        IssueVo issueInfo = issueService.getIssueInfo(parameter);
+
+        //유저 알림 추가
+        parameter.put("userId", issueInfo.getManagerUserId());
+        parameter.put("content", AlertMessages.CHANGE_ISSUE_DATE.getSentence());
+        parameter.put("type", AlertMessages.CHANGE_ISSUE_DATE.getMsgType());
+        parameter.put("targetId", requestData.getInt("issueId"));
+        userService.insertUserEvent(parameter);
 
         logger.info("response: {}", response);
 

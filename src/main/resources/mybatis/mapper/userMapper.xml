@@ -109,5 +109,54 @@
 
     </update>
 
+    <insert id="insertUserEvent" parameterType="map">
+
+        INSERT INTO `tb_alert`(
+            `id`,
+            `type`,
+            `content`,
+            `user_id`,
+            `target_id`,
+            `status`,
+            `updated`,
+            `created`
+        )
+        VALUES(
+           NULL,
+           #{type},
+           #{content},
+           #{userId},
+           #{targetId},
+           DEFAULT,
+           now(),
+           now()
+           )
+    </insert>
+
+    <update id="updateUserEvent" parameterType="map">
+
+        UPDATE `tb_alert`
+        SET
+            `status` = #{status},
+            `updated` = NOW()
+        WHERE `id` = #{alertId}
+    </update>
+
+    <select id="getAlertList" resultType="com.itschedule.itschedule_server.vo.AlertVo" parameterType="map">
+
+        SELECT
+        `id`,
+        `type`,
+        `content`,
+        `user_id` AS userId,
+        `target_id` AS targetId,
+        `status`,
+        `updated`,
+        `created`
+        FROM `tb_alert`
+        WHERE
+        user_id = #{userId}
+    </select>
+
 
 </mapper>

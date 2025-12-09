@@ -2,6 +2,7 @@ package com.itschedule.itschedule_server.controller;
 
 import com.itschedule.itschedule_server.service.UserService;
 import com.itschedule.itschedule_server.utils.ConvertUtils;
+import com.itschedule.itschedule_server.vo.AlertVo;
 import com.itschedule.itschedule_server.vo.UserVo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -348,6 +349,81 @@ public class ApiController {
         }
 
         userService.userAdminUpdate(parameter);
+
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
+    }
+
+    //이벤트 알림 리스트
+    @RequestMapping(method = RequestMethod.POST, value = "/alert_list")
+    public ResponseEntity<String> getAlertList(@RequestBody String data, HttpServletRequest request){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+        logger.info("parameter requestData: {}", requestData.toString());
+
+
+        HttpSession session = request.getSession();
+        int userId = (int) session.getAttribute("userId");
+
+        Map<String, Object> parameter = new HashMap<>();
+
+        parameter.put("userId", userId);
+
+        List<AlertVo> alertList = userService.getAlertList(parameter);
+
+        JSONArray alertListJson = new JSONArray(alertList);
+        response.put("list", alertListJson);
+
+
+        logger.info("response: {}", response);
+
+        return ResponseEntity.ok(response.toString());
+    }
+
+    //유저 인증 업데이트
+    @RequestMapping(method = RequestMethod.POST, value = "/alert_status_update")
+    public ResponseEntity<String> alertStatusUpdate(@RequestBody String data, HttpServletRequest request){
+
+        JSONObject response = new JSONObject();
+        response.put("code","200");
+        response.put("message","SUCCESS");
+        response.put("msg","성공");
+
+        JSONObject requestData = new JSONObject(data);
+        logger.info("parameter: {}", data.toString());
+
+        HttpSession session = request.getSession();
+        int userId = (int) session.getAttribute("userId");
+
+        Map<String, Object> parameter = new HashMap<>();
+
+        parameter.put("userId", userId);
+
+        if(requestData.has("alertId")
+                && requestData.has("status")){
+
+            int alertId = requestData.getInt("alertId");
+            parameter.put("alertId", alertId);
+
+            int status = requestData.getInt("status");
+            parameter.put("status", status);
+
+        }else{
+            response.put("code","999");
+            response.put("message","Parameter Invalid");
+            response.put("msg","파라미터 누락");
+
+            return ResponseEntity.ok(response.toString());
+        }
+
+        userService.updateUserEvent(parameter);
 
         logger.info("response: {}", response);
 

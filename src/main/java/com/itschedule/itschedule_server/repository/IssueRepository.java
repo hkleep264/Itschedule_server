@@ -15,11 +15,11 @@ import java.util.Map;
 public interface IssueRepository {
     List<IssueVo> getIssueList(Map<String, Object> parameter);
     Integer issueListTotalCount(Map<String, Object> parameter);
-    IssueVo getIssueInfo(Map<String, String> parameter);
+    IssueVo getIssueInfo(Map<String, Object> parameter);
     List<BoardVo> getProjectListWithMember(Map<String, Object> parameter);
     void insertIssueInfo(Map<String, Object> parameter);
     void updateIssueInfo(Map<String, Object> parameter);
-    List<UserVo> getUserListForProject(Map<String, String> parameter);
+    List<UserVo> getUserListForProject(Map<String, Object> parameter);
     void issueQuickUpdate(Map<String, Object> parameter);
     List<IssueVo> getIssueTodoList(Map<String, Object> parameter);
     void issueImportantUpdate(Map<String, Object> parameter);

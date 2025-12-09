@@ -188,7 +188,7 @@
             `start_dt` = #{startDate},
             `end_dt` = #{endDate},
             `updated` = NOW()
-        WHERE `id` = #{boardId}
+        WHERE `id` = #{issueId}
 
     </update>
 

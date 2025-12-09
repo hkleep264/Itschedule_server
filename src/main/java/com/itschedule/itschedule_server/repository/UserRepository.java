@@ -1,5 +1,6 @@
 package com.itschedule.itschedule_server.repository;
 
+import com.itschedule.itschedule_server.vo.AlertVo;
 import com.itschedule.itschedule_server.vo.UserVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,7 @@ public interface UserRepository {
     int userListTotalCount(Map<String, Object> parameter);
     void userAuthUpdate(Map<String, Object> parameter);
     void userAdminUpdate(Map<String, Object> parameter);
+    void insertUserEvent(Map<String, Object> parameter);
+    void updateUserEvent(Map<String, Object> parameter);
+    List<AlertVo> getAlertList(Map<String, Object> parameter);
 }
